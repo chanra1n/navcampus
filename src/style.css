@@ -1,0 +1,74 @@
+body,
+html {
+    background-color: black;
+    font-family: 'Montserrat', sans-serif;
+    transition: all 0.5s;
+}
+
+#navbar {
+    background-color: white;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+    text-align: center;
+}
+
+#speak_button {
+    background-color: white;
+    border: 0px;
+    outline:0px;
+    padding: 30px;
+    border-radius: 100%;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transition: all 0.25s;
+    transform: translate(-50%, -50%) scale(0.5);
+    font-size: 200px;
+    aspect-ratio: 1/1;
+    object-fit: contain;
+    width: 100%;
+}
+
+#speak_text {
+    font-size: 35px !important;
+}
+
+@keyframes fade {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes grow {
+    0% {
+        transform: translate(-50%, -20%) scale(0.50);
+    }
+
+    100% {
+        transform: translate(-50%, -20%) scale(0.6);
+    }
+}
+
+
+#audio_mockup {
+    filter: invert(1) brightness(250%) contrast(250%);
+    background-color: transparent;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    top: 87.5%;
+    left: 50%;
+    width: 110%;
+    height: 30%;
+}

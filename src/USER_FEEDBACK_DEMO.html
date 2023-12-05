@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>NAVCAMPUS NAVIGATION DEMO</title>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
+  <link type="text/css" rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div id="navbar">
+    <button id="speak_button"><i class="ri-mic-2-fill"></i></button>
+    <p id="speak_text">To begin, please tap the screen.</p>
+  </div>
+
+  <script>
+
+    var listening_for_input = false;
+    var currently_navigating = false;
+    var textCycleInterval;
+
+    function display_text(text) {
+      document.getElementById("speak_text").innerHTML = text;
+    }
+
+    function startInputCycle() {
+      document.getElementById("speak_button").style.transform = "translate(-50%,-50%) scale(0.45)";
+      document.getElementById("speak_button").style.border = "20px solid black";
+      document.getElementById("speak_button").style.outline = "20px solid white";
+      display_text("Please state your destination.");
+      var texts = ["Tap the screen when finished.", "Please state your destination."];
+      var currentIndex = 0;
+
+      textCycleInterval = setInterval(function () {
+        display_text(texts[currentIndex]);
+        currentIndex = (currentIndex + 1) % texts.length;
+      }, 5000);
+    }
+
+    function stopTextCycle() {
+      document.getElementById("speak_button").style.transform = "translate(-50%,-50%) scale(0.5)";
+      document.getElementById("speak_button").style.border = "0px";
+      document.getElementById("speak_button").style.outline = "0px";
+      document.getElementById("speak_text").style.animation = "";
+
+      clearInterval(textCycleInterval);
+      listening_for_input = false;
+      display_icon('ri-git-commit-fill');
+
+      setTimeout(function () {
+        document.getElementById("speak_button").style.pointerEvents = "auto";
+        startNavigationCycle();
+      }, 5000);
+
+    }
+    
+    function startNavigationCycle() {
+      var tap_interval = setInterval(function () {
+      //if tap is detected, stop everything, return.
+      if (currently_navigating) {
+        clearInterval(tap_interval);
+        return;
+      }
+      }, 1000); 
+      currently_navigating = true;
+      document.getElementById("speak_button").style.transform = "translate(-50%,-50%) scale(0.55)";
+      document.getElementById("speak_button").style.border = "20px dashed black";
+      document.getElementById("speak_button").style.outline = "20px solid white";
+      display_text("Take 10 steps.<br>Turn right.");
+      display_icon("ri-corner-up-right-fill");
+
+      setTimeout(function () {
+        display_text("Take 7 steps.<br>Turn left.");
+        display_icon("ri-corner-up-left-fill");
+
+        setTimeout(function () {
+          display_text("Take 5 steps.<br>Turn right.");
+          display_icon("ri-corner-up-right-fill");
+
+          setTimeout(function () {
+            display_text("Take 10 steps.");
+            display_icon("ri-arrow-up-fill");
+
+            setTimeout(function () {
+              display_text("Take 2 steps.<br>Turn right.");
+              display_icon("ri-corner-up-right-fill");
+
+              setTimeout(function () {
+                display_text("Take 20 steps.<br>Turn left.");
+                display_icon("ri-corner-up-left-fill");
+
+                setTimeout(function () {
+                  display_text("You have arrived.");
+                  display_icon("ri-flag-fill");
+                  document.getElementById("speak_button").style.transform = "translate(-50%,-50%) scale(0.6)";
+                  document.getElementById("speak_button").style.border = "0px";
+                  document.getElementById("speak_button").style.outline = "0px";
+                  setTimeout(function () {
+                    document.getElementById("speak_button").style.transform = "translate(-50%,-50%) scale(0.5)";
+                    display_text("To begin, please tap the screen.");
+                    display_icon("ri-mic-2-fill");
+                    currently_navigating = false;
+                    clearInterval(tap_interval);
+                  }, 10000);
+                }, 5000);
+
+              }, 7500);
+
+            }, 10000);
+
+          }, 6000);
+
+        }, 5000);
+
+      }, 7500);
+
+    }
+
+
+
+    function detectTap(callback) {
+      var tapCount = 0;
+      var tapTimeout;
+
+      function resetTapCount() {
+        tapCount = 0;
+      }
+
+      function handleTap() {
+        tapCount++;
+
+        if (tapCount === 1) {
+          tapTimeout = setTimeout(function () {
+            if (tapCount === 1) {
+              // single tap
+              callback('single-tap');
+              if (!listening_for_input) {
+                audio_input_mode();
+              } else {
+                stopTextCycle();
+                document.getElementById("speak_button").style.pointerEvents = "none";
+                display_text("Calculating...");
+              }
+
+              if (currently_navigating) {
+                stopNavigationCycle();
+              }
+
+            }
+            resetTapCount();
+          }, 400);
+        } else if (tapCount === 2) {
+          // double tap
+          clearTimeout(tapTimeout);
+          tapTimeout = setTimeout(function () {
+            if (tapCount === 2) {
+              callback('double-tap');
+            }
+            resetTapCount();
+          }, 400);
+        } else if (tapCount === 3) {
+          // triple tap
+          clearTimeout(tapTimeout);
+          callback('triple-tap');
+          resetTapCount();
+        }
+      }
+
+      document.addEventListener('click', handleTap);
+    }
+
+    detectTap(function (type) {
+      console.log('Detected ' + type);
+    });
+
+    function audio_input_mode() {
+      listening_for_input = true;
+      startInputCycle();
+    }
+
+    function display_icon(icon) {
+      document.getElementById("speak_button").innerHTML = "<i class='" + icon + "'></i>";
+    }
+
+    function stopNavigationCycle () {
+    window.location.reload(true);
+    }
+
+  </script>
+</body>
+
+</html>
